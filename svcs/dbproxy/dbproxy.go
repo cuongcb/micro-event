@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	mongoURI = ""
+	mongoURI = "mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb"
 )
 
 // MongoDBLayer ...
@@ -25,6 +25,10 @@ type MongoDBLayer struct {
 
 // NewMongoDBLayer ...
 func NewMongoDBLayer(uri string) (*MongoDBLayer, error) {
+	if uri == "" {
+		uri = mongoURI
+	}
+
 	s, err := mgo.Dial(uri)
 	if err != nil {
 		return nil, err

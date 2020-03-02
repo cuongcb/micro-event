@@ -9,7 +9,7 @@ import (
 )
 
 type eventServiceHandler struct {
-	dbHandler dbproxy.MongoDBLayer
+	dbHandler *dbproxy.MongoDBLayer
 }
 
 type findEventRequest struct {
@@ -78,14 +78,19 @@ func (eh *eventServiceHandler) newEventHandler(ctx *gin.Context) {
 }
 
 func main() {
-	esh := eventServiceHandler{dbHandler: dbproxy.MongoDBLayer{}}
+	dbHandler, err := dbproxy.NewMongoDBLayer("")
+	if err != nil {
+		panic(err)
+	}
+
+	esh := eventServiceHandler{dbHandler: dbHandler}
 	router := gin.Default()
 
 	v1 := router.Group("/v1/event")
 	{
 		v1.POST("/", esh.newEventHandler)
 		v1.GET("/all", esh.allEventsHandler)
-		v1.GET("/", esh.findEventHandler)
+		v1.GET("/search", esh.findEventHandler)
 	}
 
 	router.Run()
