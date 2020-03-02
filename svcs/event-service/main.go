@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 	"net/http"
 
 	"github.com/cuongcb/micro-event/svcs/dbproxy"
@@ -34,17 +33,19 @@ func (eh *eventServiceHandler) findEventHandler(ctx *gin.Context) {
 			return
 		}
 
-		event, err := eh.dbHandler.FindEvent(id)
+		event, err = eh.dbHandler.FindEvent(id)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, "invalid request")
 			return
 		}
 	case req.Name != nil:
-		event, err := eh.dbHandler.FindEventByName(name)
+		e, err := eh.dbHandler.FindEventByName(*req.Name)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, "invalid request")
 			return
 		}
+
+		event = e
 	}
 
 	ctx.JSON(http.StatusOK, event)
@@ -80,11 +81,11 @@ func main() {
 	esh := eventServiceHandler{dbHandler: dbproxy.MongoDBLayer{}}
 	router := gin.Default()
 
-	v1 := router.Group("/v1/event") {
+	v1 := router.Group("/v1/event")
+	{
 		v1.POST("/", esh.newEventHandler)
-		v1.GET("/", esh.allEventsHandler)
-		v1.GET("/:id", esh.findEventHandler)
-		v1.GET("/:name", esh.findEventHandler)
+		v1.GET("/all", esh.allEventsHandler)
+		v1.GET("/", esh.findEventHandler)
 	}
 
 	router.Run()
