@@ -89,9 +89,9 @@ func main() {
 	v1 := router.Group("/v1/event")
 	{
 		v1.POST("/", esh.newEventHandler)
-		v1.GET("/all", esh.allEventsHandler)
+		v1.GET("/", esh.allEventsHandler)
 		v1.GET("/search", esh.findEventHandler)
 	}
 
-	router.Run()
+	router.RunTLS(":8081", "./cert/cert.pem", "./cert/key.pem")
 }
