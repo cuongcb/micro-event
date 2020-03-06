@@ -1,6 +1,7 @@
-github.com/cuongcb/micro-event v0.0.0-20200303103946-b61df33d3b41 h1:1S/fClOMPKZQkQW9F4F2kV81CcKPB3G2Lvj0gYP/+Ns=
 github.com/cuongcb/micro-event/svcs/dbproxy v0.0.0-20200302103513-bc9c82285874 h1:A57E7HxNZ0CLnhtPvFQS2ihWEk4pItOj4yVc2gbO0nM=
 github.com/cuongcb/micro-event/svcs/dbproxy v0.0.0-20200302103513-bc9c82285874/go.mod h1:7uJ5ipW1u0icp1U30w5UjzIpbxlyjboHBJVI6C8GtQU=
+github.com/cuongcb/micro-event/svcs/msgqueue v0.0.0-20200306161838-225343f22304 h1:eQVtbi1fC9Dzs6qP5j9Yz6m7daMFFqRu5UncEcxETv8=
+github.com/cuongcb/micro-event/svcs/msgqueue v0.0.0-20200306161838-225343f22304/go.mod h1:GZ00At9GW0uPXjNZS76f87Ye4J0A85947/MgAPGY+x8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

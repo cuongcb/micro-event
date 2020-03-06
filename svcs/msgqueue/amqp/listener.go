@@ -69,14 +69,14 @@ func (e *eventListener) Listen(eventNames ...string) (<-chan msgqueue.Event, <-c
 			rawEventName, ok := msg.Headers["x-event-name"]
 			if !ok {
 				errors <- fmt.Errorf("no x-event-name header found in msg")
-				msg.Nack(false)
+				msg.Nack(false, false)
 				continue
 			}
 
 			eventName, ok := rawEventName.(string)
 			if !ok {
 				errors <- fmt.Errorf("x-event-name header is not string, but %t", rawEventName)
-				msg.Nack(false)
+				msg.Nack(false, false)
 				continue
 			}
 
