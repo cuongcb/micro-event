@@ -1,6 +1,7 @@
 package main
 
 import (
+	queueAmqp "github.com/cuongcb/micro-event/svcs/msgqueue/amqp"
 	"github.com/streadway/amqp"
 )
 
@@ -11,4 +12,9 @@ func main() {
 	}
 
 	defer connection.Close()
+
+	emitter, err := queueAmqp.NewEventEmitter(connection)
+	if err != nil {
+		panic(err)
+	}
 }

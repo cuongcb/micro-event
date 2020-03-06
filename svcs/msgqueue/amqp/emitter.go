@@ -3,6 +3,7 @@ package amqp
 import (
 	"encoding/json"
 
+	"github.com/cuongcb/micro-event/svcs/msgqueue"
 	"github.com/streadway/amqp"
 )
 
@@ -15,14 +16,13 @@ const (
 	noWait       = false
 )
 
-// EventEmitter ...
-type EventEmitter struct {
+type eventEmitter struct {
 	connection *amqp.Connection
 }
 
 // NewEventEmitter ...
-func NewEventEmitter(conn *amqp.Connection) (*EventEmitter, error) {
-	emitter := &EventEmitter{
+func NewEventEmitter(conn *amqp.Connection) (msgqueue.Emitter, error) {
+	emitter := &eventEmitter{
 		connection: conn,
 	}
 
@@ -34,7 +34,7 @@ func NewEventEmitter(conn *amqp.Connection) (*EventEmitter, error) {
 	return emitter, nil
 }
 
-func (e *EventEmitter) init() error {
+func (e *eventEmitter) init() error {
 	channel, err := e.connection.Channel()
 	if err != nil {
 		return err
@@ -45,30 +45,30 @@ func (e *EventEmitter) init() error {
 	return channel.ExchangeDeclare(exchangeName, exchangeType, durable, autoDelete, internal, noWait, nil)
 }
 
-func (e *EventEmitter) Emit(event Event) error {
+// Emit ...
+func (e *eventEmitter) Emit(event msgqueue.Event) error {
 	jsonEvent, err := json.Marshal(event)
 	if err != nil {
 		return err
 	}
 
-	chan, err := e.connection.Channel();
+	channel, err := e.connection.Channel()
 	if err != nil {
 		return err
 	}
 
-	defer chan.Close()
+	defer channel.Close()
 
 	msg := amqp.Publishing{
-		Headers: amqpTable{"x-event-name": event.EventName()},
-		Body: jsonEvent,
+		Headers:     amqp.Table{"x-event-name": event.EventName()},
+		Body:        jsonEvent,
 		ContentType: "application/json",
 	}
 
-	return chan.Publish(
-		"events", // exchangeName
+	return channel.Publish(
+		"events",          // exchangeName
 		event.EventName(), // message routing key
-		false, // mandatory
-		false, // immediate
-		msg // message
-	)
+		false,             // mandatory
+		false,             // immediate
+		msg)               // message
 }

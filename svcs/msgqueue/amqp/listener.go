@@ -4,16 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/cuongcb/micro-event/svcs/msgqueue"
+	"github.com/cuongcb/micro-event/svcs/msgqueue/contracts"
 	"github.com/streadway/amqp"
 )
 
-type EventListener struct {
+type eventListener struct {
 	connection *amqp.Connection
 	queue      string
 }
 
-func NewEventListener(conn *amqp.Connection, queue string) (*EventListener, error) {
-	listener := &EventListener{
+// NewEventListener ...
+func NewEventListener(conn *amqp.Connection, queue string) (msgqueue.Listener, error) {
+	listener := &eventListener{
 		connection: conn,
 		queue:      queue,
 	}
@@ -26,7 +29,7 @@ func NewEventListener(conn *amqp.Connection, queue string) (*EventListener, erro
 	return listener, nil
 }
 
-func (e *EventListener) init() error {
+func (e *eventListener) init() error {
 	channel, err := e.connection.Channel()
 	if err != nil {
 		return err
@@ -34,15 +37,15 @@ func (e *EventListener) init() error {
 
 	defer channel.Close()
 
-	_, err := channel.QueueDeclare(e.queue, true, false, false, false, nil)
+	_, err = channel.QueueDeclare(e.queue, true, false, false, false, nil)
 
 	return err
 }
 
-func (e *EventListener) Listen(eventNames ...string) (<-chan Event, <-chan error, error) {
+func (e *eventListener) Listen(eventNames ...string) (<-chan msgqueue.Event, <-chan error, error) {
 	channel, err := e.connection.Channel()
 	if err != nil {
-		return nil, nil err
+		return nil, nil, err
 	}
 
 	defer channel.Close()
@@ -58,7 +61,7 @@ func (e *EventListener) Listen(eventNames ...string) (<-chan Event, <-chan error
 		return nil, nil, err
 	}
 
-	events := make(chan Event)
+	events := make(chan msgqueue.Event)
 	errors := make(chan error)
 
 	go func() {
@@ -77,11 +80,11 @@ func (e *EventListener) Listen(eventNames ...string) (<-chan Event, <-chan error
 				continue
 			}
 
-			var event Event
+			var event msgqueue.Event
 			switch eventName {
 			case "event.created":
 				event = new(contracts.EventCreatedEvent)
-			case default:
+			default:
 				errors <- fmt.Errorf("event type %s is unknown", eventName)
 				continue // iterate new msg
 			}

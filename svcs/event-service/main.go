@@ -3,13 +3,19 @@ package main
 import (
 	"encoding/hex"
 	"net/http"
+	"time"
 
 	"github.com/cuongcb/micro-event/svcs/dbproxy"
+	"github.com/cuongcb/micro-event/svcs/msgqueue"
+	queueAmqp "github.com/cuongcb/micro-event/svcs/msgqueue/amqp"
+	"github.com/cuongcb/micro-event/svcs/msgqueue/contracts"
 	"github.com/gin-gonic/gin"
+	"github.com/streadway/amqp"
 )
 
 type eventServiceHandler struct {
-	dbHandler *dbproxy.MongoDBLayer
+	dbHandler    *dbproxy.MongoDBLayer
+	eventEmitter msgqueue.Emitter
 }
 
 type findEventRequest struct {
@@ -74,6 +80,16 @@ func (eh *eventServiceHandler) newEventHandler(ctx *gin.Context) {
 		return
 	}
 
+	msg := &contracts.EventCreatedEvent{
+		ID:         event.ID,
+		Name:       event.Name,
+		LocationID: event.Location.ID,
+		Start:      time.Unix(event.StartDate, 0),
+		End:        time.Unix(event.EndDate, 0),
+	}
+
+	eh.eventEmitter.Emit(msg)
+
 	ctx.JSON(http.StatusOK, event)
 }
 
@@ -83,7 +99,17 @@ func main() {
 		panic(err)
 	}
 
-	esh := eventServiceHandler{dbHandler: dbHandler}
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672")
+	if err != nil {
+		panic(err)
+	}
+
+	emitter, err := queueAmqp.NewEventEmitter(conn)
+	if err != nil {
+		panic(err)
+	}
+
+	esh := eventServiceHandler{dbHandler: dbHandler, eventEmitter: emitter}
 	router := gin.Default()
 
 	v1 := router.Group("/v1/event")
