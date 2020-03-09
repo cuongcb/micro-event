@@ -2,6 +2,7 @@ package amqp
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/cuongcb/micro-event/svcs/msgqueue"
 	"github.com/streadway/amqp"
@@ -64,6 +65,8 @@ func (e *eventEmitter) Emit(event msgqueue.Event) error {
 		Body:        jsonEvent,
 		ContentType: "application/json",
 	}
+
+	log.Println("emitting event:", event)
 
 	return channel.Publish(
 		"events",          // exchangeName

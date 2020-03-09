@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	mongoURI = "mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb"
+	mongoURI = "mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb"
 )
 
 // MongoDBLayer ...
@@ -46,6 +46,8 @@ func (m *MongoDBLayer) AddEvent(e Event) (Event, error) {
 	s := m.getFreshSession()
 	defer s.Close()
 
+	// log.Println("before:", e)
+
 	if e.ID.Valid() == false {
 		e.ID = bson.NewObjectId()
 	}
@@ -53,6 +55,8 @@ func (m *MongoDBLayer) AddEvent(e Event) (Event, error) {
 	if e.Location.ID.Valid() == false {
 		e.Location.ID = bson.NewObjectId()
 	}
+
+	// log.Println("after:", e)
 
 	return e, s.DB(DB).C(EVENTS).Insert(e)
 }

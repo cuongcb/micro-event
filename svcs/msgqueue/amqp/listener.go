@@ -85,16 +85,19 @@ func (e *eventListener) Listen(eventNames ...string) (<-chan msgqueue.Event, <-c
 			case "event.created":
 				event = new(contracts.EventCreatedEvent)
 			default:
+				msg.Nack(false, false)
 				errors <- fmt.Errorf("event type %s is unknown", eventName)
 				continue // iterate new msg
 			}
 
 			err := json.Unmarshal(msg.Body, event)
 			if err != nil {
+				msg.Nack(false, false)
 				errors <- err
 				continue
 			}
 
+			msg.Ack(false)
 			events <- event
 		}
 	}()

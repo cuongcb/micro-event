@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	"log"
 	"net/http"
 	"time"
 
@@ -70,20 +71,22 @@ func (eh *eventServiceHandler) allEventsHandler(ctx *gin.Context) {
 func (eh *eventServiceHandler) newEventHandler(ctx *gin.Context) {
 	var event dbproxy.Event
 	if err := ctx.Bind(&event); err != nil {
+		log.Println("binding error:", err)
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	event, err := eh.dbHandler.AddEvent(event)
 	if err != nil {
+		log.Printf("adding event %v error %v\n", event, err)
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	msg := &contracts.EventCreatedEvent{
-		ID:         event.ID,
+		ID:         event.ID.String(),
 		Name:       event.Name,
-		LocationID: event.Location.ID,
+		LocationID: event.Location.ID.String(),
 		Start:      time.Unix(event.StartDate, 0),
 		End:        time.Unix(event.EndDate, 0),
 	}
@@ -94,6 +97,7 @@ func (eh *eventServiceHandler) newEventHandler(ctx *gin.Context) {
 }
 
 func main() {
+	log.SetPrefix("[event-service] ")
 	dbHandler, err := dbproxy.NewMongoDBLayer("")
 	if err != nil {
 		panic(err)
@@ -118,6 +122,8 @@ func main() {
 		v1.GET("/", esh.allEventsHandler)
 		v1.GET("/search", esh.findEventHandler)
 	}
+
+	go router.Run(":8080")
 
 	router.RunTLS(":8081", "./cert/cert.pem", "./cert/key.pem")
 }
