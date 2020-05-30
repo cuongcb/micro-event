@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/cuongcb/micro-event/svcs/msgqueue"
-	"github.com/cuongcb/micro-event/svcs/msgqueue/contracts"
+	"github.com/cuongcb/micro-event/msgqueue"
+	"github.com/cuongcb/micro-event/msgqueue/contracts"
 	"github.com/streadway/amqp"
 )
 

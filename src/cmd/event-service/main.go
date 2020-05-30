@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cuongcb/micro-event/svcs/dbproxy"
-	"github.com/cuongcb/micro-event/svcs/msgqueue"
-	queueAmqp "github.com/cuongcb/micro-event/svcs/msgqueue/amqp"
-	"github.com/cuongcb/micro-event/svcs/msgqueue/contracts"
+	"github.com/cuongcb/micro-event/dbproxy"
+	"github.com/cuongcb/micro-event/msgqueue"
+	queueAmqp "github.com/cuongcb/micro-event/msgqueue/amqp"
+	"github.com/cuongcb/micro-event/msgqueue/contracts"
 	"github.com/gin-gonic/gin"
 	"github.com/streadway/amqp"
 )

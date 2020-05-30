@@ -1,0 +1,38 @@
+{
+  "name": "Adele World Tour",
+  "duration": 120,
+  "start_date": 768346784368,
+  "end_date": 43988943,
+  "location": {
+    "name": "West Street Opera House",
+    "address": "11 West Street, AZ 73646",
+    "country": "USA",
+    "open_time": 7,
+    "close_time": 20,
+    "halls": [
+      {
+        "name": "Cesar Hall",
+        "capacity": 10
+      }
+    ]
+  }
+}
+{
+  "name": "Linkin Park Show",
+  "duration": 90,
+  "start_date": 7683467368,
+  "end_date": 43988935343,
+  "location": {
+    "name": "West Street Pop House",
+    "address": "13 West Street, AZ 73646",
+    "country": "USA",
+    "open_time": 7,
+    "close_time": 20,
+    "halls": [
+      {
+        "name": "Cesaror Hall",
+        "capacity": 10
+      }
+    ]
+  }
+}

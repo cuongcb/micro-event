@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	queueAmqp "github.com/cuongcb/micro-event/svcs/msgqueue/amqp"
+	queueAmqp "github.com/cuongcb/micro-event/msgqueue/amqp"
 	"github.com/streadway/amqp"
 )
 

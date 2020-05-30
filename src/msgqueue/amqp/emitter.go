@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/cuongcb/micro-event/svcs/msgqueue"
+	"github.com/cuongcb/micro-event/msgqueue"
 	"github.com/streadway/amqp"
 )
 
@@ -41,7 +41,9 @@ func (e *eventEmitter) init() error {
 		return err
 	}
 
-	defer channel.Close()
+	defer func() {
+		_ = channel.Close()
+	}()
 
 	return channel.ExchangeDeclare(exchangeName, exchangeType, durable, autoDelete, internal, noWait, nil)
 }
@@ -58,7 +60,9 @@ func (e *eventEmitter) Emit(event msgqueue.Event) error {
 		return err
 	}
 
-	defer channel.Close()
+	defer func() {
+		_ = channel.Close()
+	}()
 
 	msg := amqp.Publishing{
 		Headers:     amqp.Table{"x-event-name": event.EventName()},
